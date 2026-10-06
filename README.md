@@ -42,7 +42,7 @@ root aborts before any computation starts.
 
 
 ```bash
-bash scripts/run_main.sh
+python scripts/run_prism_t.py
 ```
 
 
@@ -57,9 +57,9 @@ datasets/    loader.py (semi-supervised split + StandardScaler);
              download_data.py fetches the 47 ADBench Classical
              datasets into the layout it reads
 scripts/     run_prism_t.py (the single experiment engine; defaults = the
-             adopted main config), run_main.sh (main experiment)
+             adopted main config)
 data/        create it — datasets are not distributed
-results/     created by the run scripts: main/
+results/     created by the run script
 ```
 
 
