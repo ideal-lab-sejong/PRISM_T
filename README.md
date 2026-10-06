@@ -1,114 +1,87 @@
-# PRISM-T — official implementation
+# How Far Can Anomaly Detection Go Before Learning? Random Neural Features from Tables to Pixels
 
-Code to reproduce the PRISM-T results of the paper: the main experiment and the
-component / architecture ablations.
+**PRISM FrameWork**
 
-Datasets and results are not shipped — you create them: `data/Classical`
-(47 ADBench `.npz` files, ~83 MB) and `results/`.
+![Architecture](./images/PRISM_Framework.png)
 
-**Contents** — [1. Install](#1-install) · [2. Data](#2-data) ·
-[3. Running the experiments](#3-running-the-experiments) ·
-[4. Outputs](#4-outputs) · [5. Repository layout](#5-repository-layout)
+Authors: Hyojun Yi, Geunyoung Kim, Hogeon Seo, and Seunghyoung Ryu
 
-## 1. Install
+paper: 
+
+
+## Introduction
+
+This repository contains the official implementation of **PRISM-T**, the tabular anomaly detection module of PRISM. PRISM-T investigates how effectively a neural network with randomly initialized, frozen weights can detect anomalies in tabular data without any training.
+
+A single PRISM block — a frozen random linear layer (width 512), an IBN layer (half instance normalization, half BatchNorm) and a LeakyReLU — maps each sample to a descriptor, which is scored by a global Mahalanobis distance to the normal reference set. No weights are optimized.
+
+
+## Installation
 
 ```bash
 python -m venv venv && source venv/bin/activate    # Python >= 3.8
 pip install -r requirements.txt
 ```
 
-Dependencies are PyTorch (CPU is fine), NumPy, scikit-learn and pandas. No GPU is
-required. There is no installation step for the package itself — run everything
-**from the repository root**.
+Dependencies are PyTorch (CPU is fine), NumPy, scikit-learn and pandas. No GPU is required. Run everything from the repository root.
 
-## 2. Data
+
+## Data
+
+PRISM-T is evaluated on the 47 **ADBench Classical** datasets ([Han et al., NeurIPS 2022](https://github.com/Minqi824/ADBench)). Download them by running:
 
 ```bash
-python datasets/download_data.py     # fetches the 47 ADBench Classical .npz files into data/Classical/
+python datasets/download_data.py
 ```
 
-Source: [ADBench](https://github.com/Minqi824/ADBench) (Han et al., NeurIPS
-2022). Each `.npz` holds arrays `X` (N×d float) and `y` (N, 0=normal /
-1=anomaly). Files already present in `data/Classical/` are skipped, so an
-interrupted download resumes by re-issuing the same command.
+Files already present are skipped, so an interrupted download resumes by re-running the same command. After preparation, the datasets will be available at:
 
-Every run uses the semi-supervised split — train = 50% of the normals, test =
-the held-out normals plus all anomalies — with a `StandardScaler` fit on the
-training normals only; the metrics are AUROC and AUC-PR (average precision).
+```text
+data/
+└── Classical/    # 47 .npz files (X: N×d features, y: 0 = normal / 1 = anomaly)
+```
 
-Two deliberate choices the reported numbers depend on: **no resampling** (no
-upsampling below 1000 rows, no cap at 50000, unlike some ADBench baselines), and
-a frozen BatchNorm with **`momentum=1.0`** — its statistics are estimated in one
-pass over 4096-row chunks, each overwriting the last, so above 4096 training rows
-only the final chunk's statistics are kept.
+Every run uses the semi-supervised split: 50% of the normal samples form the reference (training) set, and the held-out normals plus all anomalies form the test set. A `StandardScaler` is fit on the reference set only.
 
-## 3. Running the experiments
 
-Smoke test first — two datasets, one seed, a few seconds:
+## Running the experiments
+
+The driver below does not download anything, so `data/Classical` must already exist.
+
+```bash
+bash scripts/run_main.sh
+```
+
+This runs the adopted configuration on all 47 datasets with seeds 0–4 and reports AUROC and AUC-PR. Expected overall means: **AUROC 86.4 / AUC-PR 65.9**.
+
+For a quick check on a subset:
 
 ```bash
 python scripts/run_prism_t.py --datasets 29_Pima 35_SpamBase --seeds 0
 ```
 
-```
-29_Pima              seed0  AUROC= 71.0  AUCPR= 70.2
-35_SpamBase          seed0  AUROC= 85.7  AUCPR= 88.7
-```
-
-The main run is the same command with its defaults — the adopted configuration
-(`--norm ibn --width 512 --layers 1 --activation leaky`, Mahalanobis shrinkage
-λ = 10⁻³, a fixed absolute value) — over all 47 datasets and seeds 0-4:
-
-```bash
-python scripts/run_prism_t.py            # writes results/, prints the overall mean
-```
-
-Expected overall means (averaged over the 47 datasets): AUROC 86.4 / AUC-PR 65.9.
-
-Both ablations run with one command — each arm is the main config with one
-setting changed, and the script writes the comparison tables to
-`results/ablation/comparison.md` once the arms finish. It reuses the main run
-above as the reference row and skips any arm already computed:
-
-```bash
-python scripts/run_ablation_t.py
-```
-
-| Factor | Arms (main = `--norm ibn --width 512 --layers 1 --activation leaky`) |
-|---|---|
-| Component | `--norm none` (Base), `--norm instance` (+IN), `--norm batch` (+BN) |
-| Architecture | `--width 128/256/1024`, `--layers 2/3`, `--activation relu/tanh/sigmoid` |
-
-A single arm can also be run directly, e.g.
-`python scripts/run_prism_t.py --norm none --out results/ablation/norm_none`;
 `python scripts/run_prism_t.py --help` lists every flag.
 
-## 4. Outputs
+
+## Repository layout
 
 ```
-<out>/prism_t_results.csv       per (dataset, seed) row: AUROC, AUCPR, timing
-<out>/prism_t_summary.csv       per-dataset mean±std over seeds
-results/ablation/<arm>/...      the same two files, one directory per ablation arm
-results/ablation/comparison.md  component + architecture comparison tables
-```
-
-`<out>` is `results/` by default (set per arm with `--out`). Each run also prints
-the per-dataset summary and the overall mean AUROC / AUC-PR across all datasets.
-
-## 5. Repository layout
-
-```
+models/      prism_t.py (the PRISM-T encoder: PRISMT, IBN),
+             mahalanobis.py (shrinkage Mahalanobis fit/score)
+evaluation/  metrics.py (AUROC/AUC-PR, score sanitization)
 datasets/    loader.py (semi-supervised split + StandardScaler),
              download_data.py (fetches the 47 ADBench Classical datasets)
-models/      prism_t.py (the frozen random-projection network: PRISMT, IBN),
-             mahalanobis.py (shrinkage Mahalanobis fit/score)
-evaluation/  metrics.py (AUROC / AUC-PR, score sanitization)
-scripts/     run_prism_t.py (the single experiment engine; defaults = the adopted
-             main config), run_ablation_t.py (runs every ablation arm and writes
-             the comparison tables)
-data/        create it via datasets/download_data.py — datasets are not distributed
-results/     created by scripts/run_prism_t.py
+scripts/     run_prism_t.py (the single experiment engine; defaults = the
+             adopted main config), run_main.sh (main experiment)
+data/        create it — datasets are not distributed
+results/     created by the run scripts: main/
 ```
+
+
+## Acknowledgement
+
+This work was partially supported in part by the IITP (Institute of Information & Communications Technology Planning & Evaluation) - ICAN (ICT Challenge and Advanced Network of HRD) grant funded by the Korea government (Ministry of Science and ICT) (IITP-2026-RS-2024-00436528), and in part by the National Research Foundation of Korea(NRF) grant funded by the Korea government(MSIT) (RS-2024-00454514)
+
 
 ## License / citation
 
