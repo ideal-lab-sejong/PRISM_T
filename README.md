@@ -1,4 +1,4 @@
-# PRISM-T — reproducibility package
+# PRISM-T — official implementation
 
 Code to reproduce the PRISM-T results of the paper: the main experiment and the
 component / architecture ablations.
