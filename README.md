@@ -2,7 +2,7 @@
 
 **PRISM FrameWork**
 
-![Architecture](./image/PRISM_Framework.png)
+![Architecture](./images/PRISM_Framework.png)
 
 Authors: Hyojun Yi, Geunyoung Kim, Hogeon Seo, and Seunghyoung Ryu
 
