@@ -30,14 +30,14 @@ After preparation, the datasets will be available at:
 
 ```text
 data/
-└── adbench/
+└── Classical/
 ```
 
 
 ## Running the experiments
 
 None of the drivers below download or convert anything,
-so `data/adbench` must already exist; a missing data
+so `data/Classical` must already exist; a missing data
 root aborts before any computation starts.
 
 
