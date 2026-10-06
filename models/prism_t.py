@@ -17,18 +17,15 @@ class IBN(nn.Module):
             raise ValueError(f"unknown IBN mode: {mode!r}")
         self.mode = mode
         self.h = int(round(width * ratio)) if mode == "ibn" else width
-        # Frozen BatchNorm with momentum=1.0: fit() estimates the running statistics in a single
-        # pass, each 4096-row chunk overwriting the last (for >4096 training rows only the final
-        # chunk's statistics are kept). This is intentional and reproduces the reported numbers.
         if mode == "none":
             self.gn, self.bn = None, None
         elif mode == "instance":
             self.gn, self.bn = nn.GroupNorm(1, width, affine=False), None
         elif mode == "batch":
-            self.gn, self.bn = None, nn.BatchNorm1d(width, affine=False, momentum=1.0)
+            self.gn, self.bn = None, nn.BatchNorm1d(width, affine=False, momentum=None)
         else:  # ibn
             self.gn = nn.GroupNorm(1, self.h, affine=False) if self.h > 0 else None
-            self.bn = nn.BatchNorm1d(width - self.h, affine=False, momentum=1.0) if width - self.h > 0 else None
+            self.bn = nn.BatchNorm1d(width - self.h, affine=False, momentum=None) if width - self.h > 0 else None
 
     def forward(self, x):
         if self.mode == "none":
