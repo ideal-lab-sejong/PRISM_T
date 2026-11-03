@@ -4,9 +4,9 @@
 
 ![Architecture](./images/PRISM_Framework.png)
 
-Authors: Hyojun Yi, Geunyoung Kim, Hogeon Seo, and Seunghyoung Ryu
+Authors: *Hyojun Yi, Geunyoung Kim, Hogeon Seo, and Seunghyoung Ryu*
 
-paper: 
+paper: How Far Can Anomaly Detection Go Before Learning? Random Neural Features from Tables to Pixels
 
 
 ## Introduction
@@ -63,7 +63,7 @@ results/     created by the run script
 ```
 
 
-## Acknowledgement
+## Acknowledgements
 
 This work was partially supported in part by the IITP (Institute of Information & Communications Technology Planning & Evaluation) - ICAN (ICT Challenge and Advanced Network of HRD) grant funded by the Korea government (Ministry of Science and ICT) (IITP-2026-RS-2024-00436528), and in part by the National Research Foundation of Korea(NRF) grant funded by the Korea government(MSIT) (RS-2024-00454514)
 
