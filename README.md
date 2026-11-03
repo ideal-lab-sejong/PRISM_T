@@ -11,8 +11,8 @@ Paper: How Far Can Untrained Neural Networks Go in Anomaly Detection? From Table
 
 ## Introduction
 
-This repository contains the implementation of **PRISM-T**, the tabular anomaly detection module of PRISM. PRISM-T investigates how effectively a neural network with randomly initialized weights can detect anomalies in tabular data.
-
+This repository provides the implementation of **PRISM-T**, a tabular anomaly detection model based on fully untrained neural networks. 
+PRISM-T combines fixed random nonlinear features with normal-reference Mahalanobis scoring to detect anomalies without pretraining or neural weight optimization.
 
 ## Data
 
