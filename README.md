@@ -44,10 +44,13 @@ root aborts before any computation starts.
 ```bash
 python scripts/run_prism_t.py
 ```
+## Results
 
+![Architecture](./images/PRISM_T_EXP.PNG)
 
+Comparison of tabular anomaly detection performance on 47 ADBench datasets in terms of AUROC and AUPRC (%, mean ± standard deviation over five random seeds). PRISM-T achieves the highest mean AUROC and the second-highest mean AUPRC among the compared methods. The table also reports Holm-adjusted p-values (p_H) and the number of datasets on which each method ranks among the top two (Top-2).
 
-## Repository layout
+## Project structure
 
 ```
 models/      prism_t.py (the PRISM-T encoder), mahalanobis.py
