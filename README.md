@@ -68,8 +68,11 @@ results/     created by the run script
 This work was partially supported in part by the IITP (Institute of Information & Communications Technology Planning & Evaluation) - ICAN (ICT Challenge and Advanced Network of HRD) grant funded by the Korea government (Ministry of Science and ICT) (IITP-2026-RS-2024-00436528), and in part by the National Research Foundation of Korea(NRF) grant funded by the Korea government(MSIT) (RS-2024-00454514)
 
 
-## License / citation
+## License and Citation
 
-To be added upon publication. The 47 ADBench "Classical" datasets remain under
-their own licences; this package redistributes neither the datasets nor derived
-weights (there are none — nothing is trained).
+This repository is made publicly available for non-commercial academic research and reproducibility purposes. The source code may be downloaded, executed, and modified for such purposes. Commercial use and redistribution require prior written permission from the rights holder.
+The underlying technology is subject to a pending patent application. No patent license is granted under this notice.
+
+The 47 ADBench "Classical" datasets are not redistributed with this repository. Instead, the provided download script retrieves them directly from the [official ADBench repository](https://github.com/Minqi824/ADBench). The datasets remain subject to their respective licensing terms.
+
+Citation information will be added upon publication.
