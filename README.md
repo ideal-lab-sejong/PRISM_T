@@ -8,6 +8,7 @@ Authors: *Hyojun Yi, Geunyoung Kim, Hogeon Seo, and Seunghyoung Ryu*
 
 Paper: How Far Can Untrained Neural Networks Go in Anomaly Detection? From Tables to Pixels
 
+[paper link](https://arxiv.org/abs/2611.08136)
 
 ## Introduction
 
